@@ -125,7 +125,16 @@ export const translations: Record<LanguageCode, Translation> = {
             themeDefault: 'Default',
             themeDefaultLight: 'Default Light',
             themeDefaultDark: 'Default Dark',
-            themeFollowSystem: 'Follow System'
+            themeFollowSystem: 'Follow System',
+            translation: 'Translation',
+            translationSettings: 'Translation Settings',
+            defaultEngine: 'Default Engine',
+            targetLanguage: 'Target Language',
+            apiEndpoint: 'API Endpoint',
+            apiKey: 'API Key',
+            model: 'Model',
+            googleEngine: 'Google Translate',
+            openaiEngine: 'OpenAI Translate'
         },
         colors: {
             default: 'Default',
@@ -216,7 +225,8 @@ export const translations: Record<LanguageCode, Translation> = {
             wordWrapOff: 'Off',
             wordWrapOn: 'Window',
             wordWrapColumn: 'Column',
-            find: 'Find…'
+            find: 'Find…',
+            translate: 'Translate'
         },
         find: {
             placeholder: 'Find',
@@ -386,6 +396,17 @@ export const translations: Record<LanguageCode, Translation> = {
             minimize: 'Minimize',
             maximize: 'Maximize',
             loadingFullDocument: 'Loading full document...'
+        },
+        translateView: {
+            originalText: 'Original (read-only)',
+            translatedText: 'Translation (read-only)',
+            backToEditor: '← Back to Editor',
+            copyTranslation: 'Copy Translation',
+            retry: 'Retry',
+            translating: 'Translating...',
+            emptyDocument: 'Document is empty, nothing to translate',
+            apiKeyRequired: 'Please configure API Key in Settings',
+            translationFailed: 'Translation failed'
         }
     },
     'zh-CN': {
@@ -440,7 +461,16 @@ export const translations: Record<LanguageCode, Translation> = {
             files: '文件',
             fileSettings: '文件设置',
             autoSave: '自动保存编辑',
-            confirmBeforeSave: '保存前进行确认'
+            confirmBeforeSave: '保存前进行确认',
+            translation: '翻译',
+            translationSettings: '翻译设置',
+            defaultEngine: '默认引擎',
+            targetLanguage: '目标语言',
+            apiEndpoint: 'API 端点',
+            apiKey: 'API Key',
+            model: '模型',
+            googleEngine: 'Google 翻译',
+            openaiEngine: 'OpenAI 翻译'
         },
         colors: {
             default: '默认',
@@ -523,7 +553,8 @@ export const translations: Record<LanguageCode, Translation> = {
             saveDiagramAsSvg: '将图表保存为SVG...',
             wordWrapOff: '关闭',
             wordWrapOn: '窗口',
-            wordWrapColumn: '列'
+            wordWrapColumn: '列',
+            translate: '翻译'
         },
         toast: {
             imageSavedSuccessfully: '图片保存成功',
@@ -648,6 +679,17 @@ export const translations: Record<LanguageCode, Translation> = {
             close: '关闭',
             minimize: '最小化',
             maximize: '最大化'
+        },
+        translateView: {
+            originalText: '原文（只读）',
+            translatedText: '译文（只读）',
+            backToEditor: '← 返回编辑',
+            copyTranslation: '复制译文',
+            retry: '重试',
+            translating: '翻译中...',
+            emptyDocument: '文档为空，无需翻译',
+            apiKeyRequired: '请先在设置中配置 API Key',
+            translationFailed: '翻译失败'
         }
     },
     ja: {
