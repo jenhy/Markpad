@@ -40,6 +40,8 @@ import {
 import { tabManager } from './stores/tabs.svelte.js';
 import { settings } from './stores/settings.svelte.js';
 import { t } from './utils/i18n.js';
+import { translationService } from './translation/TranslationService.js';
+import TranslateView from './components/TranslateView.svelte';
 
 	// syntax highlighting & latex
 	let hljs: any = $state(null);
@@ -1636,6 +1638,14 @@ import { t } from './utils/i18n.js';
 		}
 	}
 
+	function handleTranslate() {
+		const tab = tabManager.activeTab;
+		if (!tab || !tab.rawContent.trim()) {
+			return;
+		}
+		translationService.translate(tab.rawContent);
+	}
+
 	function handleNewFile() {
 		tabManager.addNewTab();
 		showHome = false;
@@ -2714,6 +2724,7 @@ import { t } from './utils/i18n.js';
 		onreloadFromDisk={reloadFromDisk}
 		onexportHtml={exportAsHtml}
 		onexportPdf={exportAsPdf}
+		ontranslate={handleTranslate}
 		onexit={appExit}
 		ontoggleHome={toggleHome}
 		ononpenFileLocation={openFileLocation}
@@ -2757,6 +2768,7 @@ import { t } from './utils/i18n.js';
 		onreloadFromDisk={reloadFromDisk}
 		onexportHtml={exportAsHtml}
 		onexportPdf={exportAsPdf}
+		ontranslate={handleTranslate}
 		onexit={appExit}
 		ontoggleHome={toggleHome}
 		ononpenFileLocation={openFileLocation}
@@ -2783,7 +2795,9 @@ import { t } from './utils/i18n.js';
 
 	<Settings show={showSettings} {theme} onSetTheme={(t) => (theme = t)} onclose={() => (showSettings = false)} />
 
-	{#if tabManager.activeTab && (tabManager.activeTab.path !== '' || tabManager.activeTab.title !== 'Recents') && !showHome}
+	{#if translationService.showTranslateView}
+		<TranslateView {theme} />
+	{:else if tabManager.activeTab && (tabManager.activeTab.path !== '' || tabManager.activeTab.title !== 'Recents') && !showHome}
 			<div
 				class="markdown-container"
 				style="zoom: {isEditing && !isSplit ? 1 : zoomLevel / 100}; --code-font: {settings.codeFont}, monospace; --code-font-size: {settings.codeFontSize}px; --highlight-color: {highlightColorMap[settings.highlightColor] || highlightColorMap.yellow};"
