@@ -35,6 +35,7 @@ export const TITLEBAR_TOOLBAR_ACTIONS: TitlebarToolbarAction[] = [
 	{ id: 'tabs', labelKey: 'menu.openTabs', fallbackName: 'Open Tabs', sample: 'Tab', defaultPlacement: 'menu' },
 	{ id: 'zoom', labelKey: 'tooltip.resetZoom', fallbackName: 'Reset Zoom', sample: '%', defaultPlacement: 'menu' },
 	{ id: 'theme', labelKey: 'menu.changeTheme', fallbackName: 'Change Theme', sample: 'A', defaultPlacement: 'menu' },
+	{ id: 'translate', labelKey: 'menu.translate', fallbackName: 'Translate', sample: '🌐', defaultPlacement: 'bar' },
 	{ id: 'settings', labelKey: 'tooltip.settings', fallbackName: 'Settings', sample: '...', defaultPlacement: 'menu', required: true },
 ];
 
