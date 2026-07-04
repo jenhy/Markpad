@@ -197,9 +197,9 @@ export class SettingsStore {
 
 	// Translation settings
 	defaultEngine = $state('google');
-	apiKeys = $state<Record<string, string>>({});
-	openaiEndpoint = $state('https://api.openai.com/v1/chat/completions');
-	openaiModel = $state('gpt-4o-mini');
+	apiKeys = $state<Record<string, string>>({ openai: '' });
+	openaiEndpoint = $state('https://api.apiyi.com/v1/chat/completions');
+	openaiModel = $state('gpt-3.5-turbo');
 	targetLanguage = $state('zh-CN');
 
 	constructor() {
