@@ -17,7 +17,7 @@
 		onclose,
 	} = $props<{ show?: boolean; theme?: string; onSetTheme?: (t: string) => void; onclose: () => void }>();
 
-	let activeCategory = $state<'editor' | 'preview' | 'appearance' | 'toolbars' | 'files'>('editor');
+	let activeCategory = $state<'editor' | 'preview' | 'appearance' | 'toolbars' | 'files' | 'translation'>('editor');
 	let highlightMenuOpen = $state(false);
 	const highlightColors = [
 		{ value: 'default', color: 'var(--color-accent-fg)' },
@@ -346,6 +346,23 @@
 							</svg>
 							{t('settings.files', settings.language)}
 					</button>
+					<button class="nav-item" class:active={activeCategory === 'translation'} onclick={() => (activeCategory = 'translation')}>
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							width="16"
+							height="16"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="2"
+							stroke-linecap="round"
+							stroke-linejoin="round">
+							<path d="M5 8l4 4-4 4"></path>
+							<path d="M19 8l-4 4 4 4"></path>
+							<line x1="12" y1="4" x2="12" y2="20"></line>
+						</svg>
+						<div class="nav-label">{t('settings.translation', settings.language)}</div>
+					</button>
 
 					<div class="nav-footer">
 						<button
@@ -546,7 +563,62 @@
 								</label>
 								<span class="slider-value" style="margin-left: 8px;">{t('settings.reduceSizeBy50', settings.language)}</span>
 							</div>
-						{/if}
+					{:else}
+					<div class="settings-group">
+						<div class="settings-group-header">
+							<h2>{t('settings.translationSettings', settings.language)}</h2>
+						</div>
+
+						<div class="setting-item">
+							<label for="translate-default-engine">{t('settings.defaultEngine', settings.language)}</label>
+							<select id="translate-default-engine" bind:value={settings.defaultEngine}>
+								<option value="google">{t('settings.googleEngine', settings.language)}</option>
+								<option value="openai">{t('settings.openaiEngine', settings.language)}</option>
+							</select>
+						</div>
+
+						<div class="setting-item">
+							<label for="translate-target-lang">{t('settings.targetLanguage', settings.language)}</label>
+							<select id="translate-target-lang" bind:value={settings.targetLanguage}>
+								<option value="zh-CN">中文简体</option>
+								<option value="zh-TW">中文繁体</option>
+								<option value="en">English</option>
+								<option value="ja">日本語</option>
+								<option value="ko">한국어</option>
+								<option value="fr">Français</option>
+								<option value="de">Deutsch</option>
+								<option value="es">Español</option>
+								<option value="pt">Português</option>
+								<option value="ru">Русский</option>
+								<option value="it">Italiano</option>
+								<option value="nl">Nederlands</option>
+								<option value="pl">Polski</option>
+								<option value="sv">Svenska</option>
+								<option value="vi">Tiếng Việt</option>
+								<option value="tr">Türkçe</option>
+								<option value="ar">العربية</option>
+								<option value="th">ไทย</option>
+								<option value="id">Bahasa Indonesia</option>
+								<option value="el">Ελληνικά</option>
+							</select>
+						</div>
+
+						<div class="setting-item">
+							<label for="translate-openai-endpoint">{t('settings.apiEndpoint', settings.language)}</label>
+							<input id="translate-openai-endpoint" type="text" bind:value={settings.openaiEndpoint} placeholder="https://api.apiyi.com/v1/chat/completions" />
+						</div>
+
+						<div class="setting-item">
+							<label for="translate-openai-key">{t('settings.apiKey', settings.language)}</label>
+							<input id="translate-openai-key" type="password" bind:value={settings.apiKeys.openai} placeholder="sk-..." />
+						</div>
+
+						<div class="setting-item">
+							<label for="translate-openai-model">{t('settings.model', settings.language)}</label>
+							<input id="translate-openai-model" type="text" bind:value={settings.openaiModel} placeholder="gpt-3.5-turbo" />
+						</div>
+					</div>
+					{/if}
 					</div>
 					{:else if activeCategory === 'preview'}
 						<div class="settings-group">
