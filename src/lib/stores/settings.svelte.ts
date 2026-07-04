@@ -195,6 +195,13 @@ export class SettingsStore {
 	autoSave = $state(true);
 	confirmBeforeSave = $state(false);
 
+	// Translation settings
+	defaultEngine = $state('google');
+	apiKeys = $state<Record<string, string>>({});
+	openaiEndpoint = $state('https://api.openai.com/v1/chat/completions');
+	openaiModel = $state('gpt-4o-mini');
+	targetLanguage = $state('zh-CN');
+
 	constructor() {
 		if (typeof localStorage !== 'undefined') {
 			const savedMinimap = localStorage.getItem('editor.minimap');
@@ -240,6 +247,19 @@ export class SettingsStore {
 			const savedConfirmBeforeSave = localStorage.getItem('editor.confirmBeforeSave');
 			if (savedAutoSave !== null) this.autoSave = savedAutoSave === 'true';
 			if (savedConfirmBeforeSave !== null) this.confirmBeforeSave = savedConfirmBeforeSave === 'true';
+
+			const savedDefaultEngine = localStorage.getItem('translate.defaultEngine');
+			if (savedDefaultEngine !== null) this.defaultEngine = savedDefaultEngine;
+			const savedApiKeys = localStorage.getItem('translate.apiKeys');
+			if (savedApiKeys !== null) {
+				try { this.apiKeys = JSON.parse(savedApiKeys); } catch { /* ignore */ }
+			}
+			const savedOpenaiEndpoint = localStorage.getItem('translate.openaiEndpoint');
+			if (savedOpenaiEndpoint !== null) this.openaiEndpoint = savedOpenaiEndpoint;
+			const savedOpenaiModel = localStorage.getItem('translate.openaiModel');
+			if (savedOpenaiModel !== null) this.openaiModel = savedOpenaiModel;
+			const savedTargetLanguage = localStorage.getItem('translate.targetLanguage');
+			if (savedTargetLanguage !== null) this.targetLanguage = savedTargetLanguage;
 
 			const parseFontSize = (value: string | null, fallback: number, min: number, max: number) => {
 				if (value === null) return fallback;
@@ -377,6 +397,11 @@ export class SettingsStore {
 					localStorage.setItem('preview.codeFontSize', String(this.codeFontSize));
 					localStorage.setItem('editor.autoSave', String(this.autoSave));
 					localStorage.setItem('editor.confirmBeforeSave', String(this.confirmBeforeSave));
+					localStorage.setItem('translate.defaultEngine', this.defaultEngine);
+					localStorage.setItem('translate.apiKeys', JSON.stringify(this.apiKeys));
+					localStorage.setItem('translate.openaiEndpoint', this.openaiEndpoint);
+					localStorage.setItem('translate.openaiModel', this.openaiModel);
+					localStorage.setItem('translate.targetLanguage', this.targetLanguage);
 					if (this.preZenState) {
 						localStorage.setItem('editor.preZenState', JSON.stringify(this.preZenState));
 					} else {
