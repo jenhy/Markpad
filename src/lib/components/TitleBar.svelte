@@ -34,6 +34,7 @@
 		onreloadFromDisk,
 		onexportHtml,
 		onexportPdf,
+		ontranslate,
 		onexit,
 		ontoggleHome,
 		ononpenFileLocation,
@@ -75,6 +76,7 @@
 		onreloadFromDisk?: () => void;
 		onexportHtml?: () => void;
 		onexportPdf?: () => void;
+		ontranslate?: () => void;
 		onexit?: () => void;
 		ontoggleHome: () => void;
 		ononpenFileLocation: () => void;
@@ -449,6 +451,17 @@
 						<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
 							><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="9" y1="15" x2="15" y2="15"></line></svg>
 						{t('menu.exportPdf', currentLanguage)}
+					</button>
+					<button
+						type="button"
+						aria-label={t('menu.translate', currentLanguage)}
+						onclick={() => {
+							homeMenuOpen = false;
+							ontranslate?.();
+						}}>
+						<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+							><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2z"></path><path d="M2 12h20"></path><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+						{t('menu.translate', currentLanguage)}
 					</button>
 					{/if}
 					<div class="home-menu-divider"></div>
