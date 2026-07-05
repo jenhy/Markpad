@@ -563,62 +563,7 @@
 								</label>
 								<span class="slider-value" style="margin-left: 8px;">{t('settings.reduceSizeBy50', settings.language)}</span>
 							</div>
-					{:else}
-					<div class="settings-group">
-						<div class="settings-group-header">
-							<h2>{t('settings.translationSettings', settings.language)}</h2>
-						</div>
-
-						<div class="setting-item">
-							<label for="translate-default-engine">{t('settings.defaultEngine', settings.language)}</label>
-							<select id="translate-default-engine" bind:value={settings.defaultEngine}>
-								<option value="google">{t('settings.googleEngine', settings.language)}</option>
-								<option value="openai">{t('settings.openaiEngine', settings.language)}</option>
-							</select>
-						</div>
-
-						<div class="setting-item">
-							<label for="translate-target-lang">{t('settings.targetLanguage', settings.language)}</label>
-							<select id="translate-target-lang" bind:value={settings.targetLanguage}>
-								<option value="zh-CN">中文简体</option>
-								<option value="zh-TW">中文繁体</option>
-								<option value="en">English</option>
-								<option value="ja">日本語</option>
-								<option value="ko">한국어</option>
-								<option value="fr">Français</option>
-								<option value="de">Deutsch</option>
-								<option value="es">Español</option>
-								<option value="pt">Português</option>
-								<option value="ru">Русский</option>
-								<option value="it">Italiano</option>
-								<option value="nl">Nederlands</option>
-								<option value="pl">Polski</option>
-								<option value="sv">Svenska</option>
-								<option value="vi">Tiếng Việt</option>
-								<option value="tr">Türkçe</option>
-								<option value="ar">العربية</option>
-								<option value="th">ไทย</option>
-								<option value="id">Bahasa Indonesia</option>
-								<option value="el">Ελληνικά</option>
-							</select>
-						</div>
-
-						<div class="setting-item">
-							<label for="translate-openai-endpoint">{t('settings.apiEndpoint', settings.language)}</label>
-							<input id="translate-openai-endpoint" type="text" bind:value={settings.openaiEndpoint} placeholder="https://api.apiyi.com/v1/chat/completions" />
-						</div>
-
-						<div class="setting-item">
-							<label for="translate-openai-key">{t('settings.apiKey', settings.language)}</label>
-							<input id="translate-openai-key" type="password" bind:value={settings.apiKeys.openai} placeholder="sk-..." />
-						</div>
-
-						<div class="setting-item">
-							<label for="translate-openai-model">{t('settings.model', settings.language)}</label>
-							<input id="translate-openai-model" type="text" bind:value={settings.openaiModel} placeholder="gpt-3.5-turbo" />
-						</div>
-					</div>
-					{/if}
+						{/if}
 					</div>
 					{:else if activeCategory === 'preview'}
 						<div class="settings-group">
@@ -1043,6 +988,61 @@
 								<input id="files-confirm-before-save" type="checkbox" checked={settings.confirmBeforeSave} onchange={() => settings.toggleConfirmBeforeSave()} />
 								<span class="toggle-slider"></span>
 							</label>
+						</div>
+					</div>
+					{:else if activeCategory === 'translation'}
+					<div class="settings-group">
+						<div class="settings-group-header">
+							<h2>{t('settings.translationSettings', settings.language)}</h2>
+						</div>
+
+						<div class="setting-item">
+							<label for="translate-default-engine">{t('settings.defaultEngine', settings.language)}</label>
+							<select id="translate-default-engine" bind:value={settings.defaultEngine}>
+								<option value="google">{t('settings.googleEngine', settings.language)}</option>
+								<option value="openai">{t('settings.openaiEngine', settings.language)}</option>
+							</select>
+						</div>
+
+						<div class="setting-item">
+							<label for="translate-target-lang">{t('settings.targetLanguage', settings.language)}</label>
+							<select id="translate-target-lang" bind:value={settings.targetLanguage}>
+								<option value="zh-CN">中文简体</option>
+								<option value="zh-TW">中文繁体</option>
+								<option value="en">English</option>
+								<option value="ja">日本語</option>
+								<option value="ko">한국어</option>
+								<option value="fr">Français</option>
+								<option value="de">Deutsch</option>
+								<option value="es">Español</option>
+								<option value="pt">Português</option>
+								<option value="ru">Русский</option>
+								<option value="it">Italiano</option>
+								<option value="nl">Nederlands</option>
+								<option value="pl">Polski</option>
+								<option value="sv">Svenska</option>
+								<option value="vi">Tiếng Việt</option>
+								<option value="tr">Türkçe</option>
+								<option value="ar">العربية</option>
+								<option value="th">ไทย</option>
+								<option value="id">Bahasa Indonesia</option>
+								<option value="el">Ελληνικά</option>
+							</select>
+						</div>
+
+						<div class="setting-item">
+							<label for="translate-openai-endpoint">{t('settings.apiEndpoint', settings.language)}</label>
+							<input id="translate-openai-endpoint" type="text" bind:value={settings.openaiEndpoint} placeholder="https://api.apiyi.com/v1/chat/completions" />
+						</div>
+
+						<div class="setting-item">
+							<label for="translate-openai-key">{t('settings.apiKey', settings.language)}</label>
+							<input id="translate-openai-key" type="password" bind:value={settings.apiKeys.openai} placeholder="sk-..." />
+						</div>
+
+						<div class="setting-item">
+							<label for="translate-openai-model">{t('settings.model', settings.language)}</label>
+							<input id="translate-openai-model" type="text" bind:value={settings.openaiModel} placeholder="gpt-3.5-turbo" />
 						</div>
 					</div>
 					{/if}

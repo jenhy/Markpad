@@ -17,19 +17,28 @@
         "script-src": "'self' 'unsafe-inline'",
         "style-src": "'self' 'unsafe-inline' https://fonts.googleapis.com",
         "img-src": "'self' asset: https: http://asset.localhost blob: data:",
-        "connect-src": "'self'",
+        "connect-src": "'self' https:",
         "frame-src": "https://www.youtube.com https://www.youtube-nocookie.com",
         "font-src": "'self' https://fonts.gstatic.com"
       },
       "assetProtocol": {
         "enable": true,
-        "scope": ["**"]
+        "scope": [
+          "**"
+        ]
       }
     }
   },
   "bundle": {
     "active": true,
-    "targets": ["deb", "appimage", "dmg", "rpm", "app", "nsis"],
+    "targets": [
+      "deb",
+      "appimage",
+      "dmg",
+      "rpm",
+      "app",
+      "nsis"
+    ],
     "createUpdaterArtifacts": true,
     "icon": [
       "icons/32x32.png",
@@ -40,7 +49,10 @@
     ],
     "fileAssociations": [
       {
-        "ext": ["md", "markdown"],
+        "ext": [
+          "md",
+          "markdown"
+        ],
         "contentTypes": [
           "net.daringfireball.markdown",
           "public.markdown"
@@ -51,8 +63,12 @@
         "role": "Editor"
       },
       {
-        "ext": ["txt"],
-        "contentTypes": ["public.plain-text"],
+        "ext": [
+          "txt"
+        ],
+        "contentTypes": [
+          "public.plain-text"
+        ],
         "mimeType": "text/plain",
         "name": "Text File",
         "description": "Opens Text files with Markpad",
@@ -79,7 +95,9 @@
         "https://github.com/alecdotdev/Markpad/releases/latest/download/latest.json"
       ],
       "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEIzMENBRkQ5NjFGRkM4NDcKUldSSHlQOWgyYThNczhINFc4VzVmVEcrS2JGRlRKRWFTVHVTVU9saC9WdFJQZjc0RjZzNmdQRGcK",
-      "windows": { "installMode": "passive" }
+      "windows": {
+        "installMode": "passive"
+      }
     }
   }
 }

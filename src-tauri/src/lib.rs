@@ -952,7 +952,7 @@ pub fn run() {
             bring_webview_window_to_front(&window);
         }))
         .plugin(tauri_plugin_prevent_default::init())
-        .plugin(tauri_plugin_updater::Builder::new().build())
+                .plugin(tauri_plugin_updater::Builder::new().build())
         .plugin(tauri_plugin_process::init())
         .plugin(
             tauri_plugin_window_state::Builder::default()

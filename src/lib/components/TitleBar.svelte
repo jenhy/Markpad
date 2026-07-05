@@ -222,6 +222,7 @@
 			if (isMarkdown && !tabManager.activeTab?.isSplit) {
 				list.push('edit');
 			}
+			list.push('translate');
 			// Find in preview: only meaningful when a preview is actually
 			// visible (view mode or split). In pure edit mode Monaco's own
 			// Ctrl+F handles search, so we hide the entry there.
@@ -451,17 +452,6 @@
 						<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
 							><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="9" y1="15" x2="15" y2="15"></line></svg>
 						{t('menu.exportPdf', currentLanguage)}
-					</button>
-					<button
-						type="button"
-						aria-label={t('menu.translate', currentLanguage)}
-						onclick={() => {
-							homeMenuOpen = false;
-							ontranslate?.();
-						}}>
-						<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-							><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2z"></path><path d="M2 12h20"></path><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
-						{t('menu.translate', currentLanguage)}
 					</button>
 					{/if}
 					<div class="home-menu-divider"></div>
@@ -844,6 +834,23 @@
 							</div>
 						{/if}
 					</div>
+				{:else if id === 'translate'}
+					<button
+						class="title-action-btn"
+						onclick={() => {
+							hideTooltip();
+							kebabMenuOpen = false;
+							ontranslate?.();
+						}}
+						aria-label={t('menu.translate', currentLanguage)}
+						onmouseenter={(e) => showTooltip(e, t('menu.translate', currentLanguage))}
+						onmousedown={(e) => e.preventDefault()}
+						onmouseleave={hideTooltip}
+						transition:fly={{ x: 10, duration: 200 }}>
+						<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+							><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2z"></path><path d="M2 12h20"></path><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+						<span class="action-label">{t('menu.translate', currentLanguage)}</span>
+					</button>
 				{/if}
 			{/each}
 		{/snippet}

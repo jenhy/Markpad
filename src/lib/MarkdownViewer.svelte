@@ -40,7 +40,7 @@ import {
 import { tabManager } from './stores/tabs.svelte.js';
 import { settings } from './stores/settings.svelte.js';
 import { t } from './utils/i18n.js';
-import { translationService } from './translation/TranslationService.js';
+import { translationService } from './translation/TranslationService.svelte.js';
 import TranslateView from './components/TranslateView.svelte';
 
 	// syntax highlighting & latex

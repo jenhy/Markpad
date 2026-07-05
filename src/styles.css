@@ -1485,6 +1485,20 @@ body {
 	border-right: 1px solid var(--color-border-default);
 }
 
+.source-with-toc {
+	display: flex;
+	flex: 1;
+	overflow: hidden;
+}
+
+.translate-toc-sidebar {
+	width: 200px;
+	flex-shrink: 0;
+	overflow-y: auto;
+	border-right: 1px solid var(--color-border-muted);
+	background: var(--color-canvas-subtle);
+}
+
 .translate-pane-header {
 	padding: 8px 16px;
 	font-size: 13px;
@@ -1502,7 +1516,6 @@ body {
 	font-family: var(--win-font);
 	font-size: 14px;
 	line-height: 1.6;
-	white-space: pre-wrap;
 	word-break: break-word;
 	color: var(--color-fg-default);
 	background: var(--color-canvas-default);
