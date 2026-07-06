@@ -1,4 +1,4 @@
-<script lang="ts">
+﻿<script lang="ts">
 	import { invoke, convertFileSrc } from '@tauri-apps/api/core';
 	import { listen } from '@tauri-apps/api/event';
 	import { getCurrentWindow } from '@tauri-apps/api/window';
@@ -1638,6 +1638,27 @@ import TranslateView from './components/TranslateView.svelte';
 		}
 	}
 
+	async function handleTranslateNavigate(path: string, hash?: string) {
+		console.log('[MarkdownViewer] handleTranslateNavigate:', { path, hash, currentFile });
+		translationService.closeView();
+		const isSameFile = normalizeComparableMarkdownPath(path, settings.osType) === normalizeComparableMarkdownPath(currentFile, settings.osType);
+		console.log('[MarkdownViewer] isSameFile:', isSameFile);
+		if (isSameFile) {
+			if (hash) {
+				console.log('[MarkdownViewer] same file, scrolling to hash:', hash);
+				await scrollToAnchorWhenReady(hash);
+			}
+			return;
+		}
+		if (tabManager.activeTabId && !(await canCloseTab(tabManager.activeTabId))) return;
+		console.log('[MarkdownViewer] loading file:', path);
+		await loadMarkdown(path, { navigate: true });
+		if (hash) {
+			console.log('[MarkdownViewer] scrolling to hash:', hash);
+			await scrollToAnchorWhenReady(hash, { pushHistory: false }, path);
+		}
+	}
+
 	function handleTranslate() {
 		const tab = tabManager.activeTab;
 		if (!tab || !tab.rawContent.trim()) {
@@ -2796,7 +2817,7 @@ import TranslateView from './components/TranslateView.svelte';
 	<Settings show={showSettings} {theme} onSetTheme={(t) => (theme = t)} onclose={() => (showSettings = false)} />
 
 	{#if translationService.showTranslateView}
-		<TranslateView {theme} />
+		<TranslateView {theme} currentFile={currentFile} onnavigate={(path, hash) => handleTranslateNavigate(path, hash)} />
 	{:else if tabManager.activeTab && (tabManager.activeTab.path !== '' || tabManager.activeTab.title !== 'Recents') && !showHome}
 			<div
 				class="markdown-container"
