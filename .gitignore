@@ -12,3 +12,9 @@ test.md
 test_image.png
 src-tauri/output.txt
 
+# Local tooling artifacts
+.codegraph/
+.playwright-mcp/
+.superpowers/
+markpad-app.png
+
