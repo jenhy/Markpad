@@ -32,6 +32,7 @@ import {
 	resolveMarkdownTargetPath,
 	type MarkdownLinkTarget as RelativeMarkdownTarget,
 } from './utils/markdownLinks.js';
+import { parseSourcepos, resolveScrollTop, type BlockGeometry } from './utils/scrollAnchor.js';
 
 	const appWindow = getCurrentWindow();
 
@@ -767,6 +768,59 @@ import TranslateView from './components/TranslateView.svelte';
 		tick().then(() => findBar?.reapply());
 	});
 
+	// The reader's position is stored as `anchorLine` (a source line). Turning it
+	// back into a scroll offset needs the rendered block geometry, which is only
+	// correct once every async renderer has settled. `renderRichContent` swaps
+	// mermaid <pre> blocks for <svg> asynchronously, so a restore that runs
+	// before that lands is computed against a shorter document and drifts by
+	// exactly the height the late blocks added. `pendingAnchorRestore` keeps the
+	// request alive so it can be re-applied once the layout stops changing.
+	let pendingAnchorRestore: { tabId: string; anchorLine: number } | null = null;
+	let anchorRestoreTimer: ReturnType<typeof setTimeout> | undefined;
+	let markdownBodyObserver: MutationObserver | undefined;
+
+	function collectBlockGeometry(body: HTMLElement): BlockGeometry[] {
+		const blocks: BlockGeometry[] = [];
+		// Search all descendants, not just top-level children: `processMarkdownHtml`
+		// nests heading bodies inside `div.foldable-content-wrapper > div.content-inner`,
+		// so a top-level scan only ever sees the h1 headers.
+		for (const el of Array.from(body.querySelectorAll<HTMLElement>('[data-sourcepos]'))) {
+			const parsed = parseSourcepos(el.dataset.sourcepos);
+			if (!parsed) continue;
+			blocks.push({
+				startLine: parsed.startLine,
+				endLine: parsed.endLine,
+				offsetTop: el.offsetTop,
+				offsetHeight: el.offsetHeight,
+			});
+		}
+		return blocks;
+	}
+
+	function restoreAnchorNow(body: HTMLElement, anchorLine: number): boolean {
+		const target = resolveScrollTop(collectBlockGeometry(body), anchorLine, 60);
+		if (target === null) return false;
+		if (Math.abs(body.scrollTop - target) > 1) {
+			isProgrammaticScroll = true;
+			body.scrollTop = target;
+		}
+		return true;
+	}
+
+	function scheduleAnchorRestore(tabId: string, anchorLine: number) {
+		pendingAnchorRestore = { tabId, anchorLine };
+		clearTimeout(anchorRestoreTimer);
+		// Coalesce the burst of mutations each async renderer produces, then
+		// re-apply against the settled layout.
+		anchorRestoreTimer = setTimeout(() => {
+			const pending = pendingAnchorRestore;
+			const body = markdownBody;
+			if (!pending || !body || isEditing) return;
+			if (pending.tabId !== tabManager.activeTabId) return;
+			restoreAnchorNow(body, pending.anchorLine);
+		}, 120);
+	}
+
 	$effect(() => {
 		// Depend on the ID and body existence to trigger restore
 		const id = tabManager.activeTabId;
@@ -779,35 +833,10 @@ import TranslateView from './components/TranslateView.svelte';
 					let scrolled = false;
 
 					if (tab.anchorLine > 0) {
-						// Interpolated Restore
-						// Find element containing the anchor line
-						const children = Array.from(body.children) as HTMLElement[];
-						for (const el of children) {
-							const sourcepos = el.dataset.sourcepos;
-							if (sourcepos) {
-								const [start, end] = sourcepos.split('-');
-								const startLine = parseInt(start.split(':')[0]);
-								const endLine = parseInt(end.split(':')[0]);
-
-								if (!isNaN(startLine) && !isNaN(endLine)) {
-									if (tab.anchorLine >= startLine && tab.anchorLine <= endLine) {
-										// Found the container
-										const totalLines = endLine - startLine; // Can be 0 for single line
-										let ratio = 0;
-										if (totalLines > 0) {
-											ratio = (tab.anchorLine - startLine) / totalLines;
-										}
-
-										// Calculate target pixel position
-										// We want the anchor line to be roughly at offset 60
-										const targetOffset = el.offsetTop + el.offsetHeight * ratio - 60;
-										body.scrollTop = Math.max(0, targetOffset);
-										scrolled = true;
-										break;
-									}
-								}
-							}
-						}
+						scrolled = restoreAnchorNow(body, tab.anchorLine);
+						// Async renderers (mermaid) may still be swapping blocks in,
+						// which changes the geometry this restore was computed from.
+						scheduleAnchorRestore(id, tab.anchorLine);
 					}
 
 					if (!scrolled) {
@@ -821,6 +850,14 @@ import TranslateView from './components/TranslateView.svelte';
 				}
 			});
 		}
+	});
+
+	$effect(() => {
+		const body = markdownBody;
+		const observer = markdownBodyObserver;
+		if (!body || !observer) return;
+		observer.observe(body, { childList: true, subtree: true });
+		return () => observer.disconnect();
 	});
 
 	$effect(() => {
@@ -937,31 +974,46 @@ import TranslateView from './components/TranslateView.svelte';
 
 			// Interpolated Anchor Calculation
 			const anchorOffset = target.scrollTop + 60;
-			const children = Array.from(markdownBody?.children || []);
+			// `scrollTop` is fractional in browsers, while block bounds are whole
+			// pixels. Without a tolerance a block whose top sits exactly on the
+			// anchor line fails the `<=` test and the *next* block wins, recording
+			// an anchor one heading too far down.
+			const ANCHOR_EPSILON = 1;
 
-			for (const child of children) {
-				const el = child as HTMLElement;
+			// Scan all descendants, not just top-level children: heading bodies are
+			// nested inside `div.foldable-content-wrapper > div.content-inner`, and
+			// those wrappers carry no sourcepos of their own, so a top-level scan
+			// finds nothing to record and `anchorLine` never advances past 0.
+			// Pick the tightest covering block so the recorded line is as specific
+			// as the markup allows.
+			let best: { el: HTMLElement; startLine: number; endLine: number; span: number } | null = null;
+
+			for (const el of Array.from(
+				markdownBody?.querySelectorAll<HTMLElement>('[data-sourcepos]') || [],
+			)) {
 				// Check intersection
-				if (el.offsetTop <= anchorOffset && el.offsetTop + el.offsetHeight > anchorOffset) {
-					const sourcepos = el.dataset.sourcepos;
-					if (sourcepos) {
-						const [start, end] = sourcepos.split('-');
-						const startLine = parseInt(start.split(':')[0]);
-						const endLine = parseInt(end.split(':')[0]);
-
-						if (!isNaN(startLine) && !isNaN(endLine)) {
-							// Calculate relative position within element
-							const relativeOffset = anchorOffset - el.offsetTop;
-							const ratio = relativeOffset / el.offsetHeight;
-
-							const totalLines = endLine - startLine;
-							const estimatedLine = startLine + Math.round(totalLines * ratio);
-
-							tabManager.updateTabAnchorLine(tabManager.activeTabId, estimatedLine);
-						}
+				if (
+					el.offsetTop <= anchorOffset + ANCHOR_EPSILON &&
+					el.offsetTop + el.offsetHeight > anchorOffset
+				) {
+					const parsed = parseSourcepos(el.dataset.sourcepos);
+					if (!parsed) continue;
+					const span = parsed.endLine - parsed.startLine;
+					if (!best || span < best.span) {
+						best = { el, startLine: parsed.startLine, endLine: parsed.endLine, span };
 					}
-					break;
 				}
+			}
+
+			if (best) {
+				// Calculate relative position within element
+				const relativeOffset = anchorOffset - best.el.offsetTop;
+				const ratio = relativeOffset / best.el.offsetHeight;
+
+				const totalLines = best.endLine - best.startLine;
+				const estimatedLine = best.startLine + Math.round(totalLines * ratio);
+
+				tabManager.updateTabAnchorLine(tabManager.activeTabId, estimatedLine);
 			}
 		}
 
@@ -2366,6 +2418,17 @@ import TranslateView from './components/TranslateView.svelte';
 	onMount(() => {
 		loadRecentFiles();
 
+		// Watch for DOM swaps inside the preview pane — chiefly `renderRichContent`
+		// replacing a mermaid <pre> with its <svg>. Each swap changes the document
+		// height, which invalidates any scroll offset computed before it landed.
+		// ResizeObserver can't see this: the pane's own box size doesn't change when
+		// its content grows, so we watch childList instead and re-anchor once the
+		// mutations settle.
+		markdownBodyObserver = new MutationObserver(() => {
+			const pending = pendingAnchorRestore;
+			if (pending) scheduleAnchorRestore(pending.tabId, pending.anchorLine);
+		});
+
 		// @ts-ignore
 		Promise.all([import('highlight.js'), import('highlightjs-svelte'), import('katex'), import('mermaid')]).then(async ([hljsModule, svelteModule, katexMainModule, mermaidModule]) => {
 			hljs = hljsModule.default;
@@ -2716,6 +2779,8 @@ import TranslateView from './components/TranslateView.svelte';
 
 		return () => {
 			unlisteners.forEach((u) => u());
+			clearTimeout(anchorRestoreTimer);
+			markdownBodyObserver?.disconnect();
 		};
 	});
 </script>
